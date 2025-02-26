@@ -1,28 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { fetchData } from '../../api';
 
-const CancelOrder = () => {
-  const [orderId, setOrderId] = useState('');
+const ManageOrderHistory = () => {
+  const [orders, setOrders] = useState([]);
 
-  const handleChange = (e) => {
-    setOrderId(e.target.value);
-  };
-
-  const handleCancel = async () => {
-    try {
-      await fetchData(`/orders/${orderId}`, { method: 'DELETE' });
-      alert('Order canceled successfully');
-    } catch (error) {
-      alert('Error canceling order');
-    }
-  };
+  useEffect(() => {
+    const getOrders = async () => {
+      try {
+        const data = await fetchData('/orders');
+        setOrders(data);
+      } catch (error) {
+        alert('Error fetching orders');
+      }
+    };
+    getOrders();
+  }, []);
 
   return (
     <div>
-      <input type="text" value={orderId} onChange={handleChange} placeholder="Enter Order ID" />
-      <button onClick={handleCancel}>Cancel Order</button>
+      <h2>Order History</h2>
+      <ul>
+        {orders.map((order) => (
+          <li key={order.id}>
+            Order Date: {order.orderDate} - Customer: {order.customerId}
+            <ul>
+              {order.products.map((product) => (
+                <li key={product.id}>{product.name} - ${product.price}</li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
 
-export default CancelOrder;
+export default ManageOrderHistory;
