@@ -1,31 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { fetchData } from '../../api';
+import axios from 'axios';
 
-const CalculateOrderTotalPrice = () => {
-  const [orderId, setOrderId] = useState('');
-  const [totalPrice, setTotalPrice] = useState(null);
+const OrderTotal = ({ orderId }) => {
+  const [total, setTotal] = useState(0);
 
-  const handleChange = (e) => {
-    setOrderId(e.target.value);
-  };
-
-  const handleCalculate = async () => {
-    try {
-      const order = await fetchData(`/orders/${orderId}`);
-      const total = order.products.reduce((sum, product) => sum + product.price, 0);
-      setTotalPrice(total);
-    } catch (error) {
-      alert('Error calculating order total');
-    }
-  };
+  useEffect(() => {
+    axios.get(`/api/orders/${orderId}/total`)
+      .then(response => setTotal(response.data.total))
+      .catch(error => console.error('There was an error calculating the order total:', error));
+  }, [orderId]);
 
   return (
     <div>
-      <input type="text" value={orderId} onChange={handleChange} placeholder="Enter Order ID" />
-      <button onClick={handleCalculate}>Calculate Total</button>
-      {totalPrice !== null && <p>Total Price: ${totalPrice}</p>}
+      <h3>Order Total: ${total}</h3>
     </div>
   );
 };
 
-export default CalculateOrderTotalPrice;
+export default OrderTotal;
