@@ -1,23 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { fetchData } from '../../api';
+import { Form, Button } from 'react-bootstrap';
+import axios from 'axios';
 
 const PlaceOrderForm = () => {
-  const [order, setOrder] = useState({ customerId: '', products: [], orderDate: '' });
+  const [order, setOrder] = useState({ customerId: '', products: [] });
   const [customers, setCustomers] = useState([]);
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    const fetchCustomersAndProducts = async () => {
-      try {
-        const customerData = await fetchData('/customers');
-        const productData = await fetchData('/products');
-        setCustomers(customerData);
-        setProducts(productData);
-      } catch (error) {
-        alert('Error fetching data');
-      }
-    };
-    fetchCustomersAndProducts();
+    axios.get('/api/customers')
+      .then(response => setCustomers(response.data))
+      .catch(error => console.error('There was an error fetching the customers:', error));
+
+    axios.get('/api/products')
+      .then(response => setProducts(response.data))
+      .catch(error => console.error('There was an error fetching the products:', error));
   }, []);
 
   const handleChange = (e) => {
@@ -27,60 +24,44 @@ const PlaceOrderForm = () => {
 
   const handleProductChange = (e) => {
     const { value, checked } = e.target;
-    setOrder((prevOrder) => ({
-      ...prevOrder,
-      products: checked
-        ? [...prevOrder.products, value]
-        : prevOrder.products.filter((product) => product !== value),
-    }));
+    const selectedProducts = checked
+      ? [...order.products, value]
+      : order.products.filter(productId => productId !== value);
+    setOrder({ ...order, products: selectedProducts });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await fetchData('/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(order),
-      });
-      alert('Order placed successfully');
-    } catch (error) {
-      alert('Error placing order');
-    }
+    axios.post('/api/orders', order)
+      .then(response => console.log('Order placed:', response.data))
+      .catch(error => console.error('There was an error placing the order:', error));
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Customer: </label>
-        <select name="customerId" value={order.customerId} onChange={handleChange} required>
-          <option value="">Select Customer</option>
-          {customers.map((customer) => (
-            <option key={customer.id} value={customer.id}>
-              {customer.name}
-            </option>
+    <Form onSubmit={handleSubmit}>
+      <Form.Group controlId="formCustomer">
+        <Form.Label>Customer</Form.Label>
+        <Form.Control as="select" name="customerId" value={order.customerId} onChange={handleChange} required>
+          <option value="">Select a customer</option>
+          {customers.map(customer => (
+            <option key={customer.id} value={customer.id}>{customer.name}</option>
           ))}
-        </select>
-      </div>
-      <div>
-        <label>Products: </label>
-        {products.map((product) => (
-          <div key={product.id}>
-            <input
-              type="checkbox"
-              value={product.id}
-              onChange={handleProductChange}
-            />
-            {product.name} - ${product.price}
-          </div>
+        </Form.Control>
+      </Form.Group>
+      <Form.Group controlId="formProducts">
+        <Form.Label>Products</Form.Label>
+        {products.map(product => (
+          <Form.Check
+            key={product.id}
+            type="checkbox"
+            label={`${product.name} - $${product.price}`}
+            value={product.id}
+            onChange={handleProductChange}
+          />
         ))}
-      </div>
-      <div>
-        <label>Order Date: </label>
-        <input type="date" name="orderDate" value={order.orderDate} onChange={handleChange} required />
-      </div>
-      <button type="submit">Place Order</button>
-    </form>
+      </Form.Group>
+      <Button variant="primary" type="submit">Place Order</Button>
+    </Form>
   );
 };
 
