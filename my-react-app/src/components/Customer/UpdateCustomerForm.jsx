@@ -1,20 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { fetchData } from '../../api';
+import React, { useState, useEffect } from 'react';
+import { Form, Button } from 'react-bootstrap';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
-const UpdateCustomerForm = ({ match }) => {
+const UpdateCustomerForm = () => {
+  const { id } = useParams();
   const [customer, setCustomer] = useState({ name: '', email: '', phone: '' });
-  const { id } = match.params;
 
   useEffect(() => {
-    const getCustomer = async () => {
-      try {
-        const data = await fetchData(`/customers/${id}`);
-        setCustomer(data);
-      } catch (error) {
-        alert('Error fetching customer details');
-      }
-    };
-    getCustomer();
+    axios.get(`/api/customers/${id}`)
+      .then(response => setCustomer(response.data))
+      .catch(error => console.error('There was an error fetching the customer details:', error));
   }, [id]);
 
   const handleChange = (e) => {
@@ -22,36 +18,29 @@ const UpdateCustomerForm = ({ match }) => {
     setCustomer({ ...customer, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await fetchData(`/customers/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(customer),
-      });
-      alert('Customer updated successfully');
-    } catch (error) {
-      alert('Error updating customer');
-    }
+    axios.put(`/api/customers/${id}`, customer)
+      .then(response => console.log('Customer updated:', response.data))
+      .catch(error => console.error('There was an error updating the customer:', error));
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Name: </label>
-        <input type="text" name="name" value={customer.name} onChange={handleChange} required />
-      </div>
-      <div>
-        <label>Email: </label>
-        <input type="email" name="email" value={customer.email} onChange={handleChange} required />
-      </div>
-      <div>
-        <label>Phone: </label>
-        <input type="tel" name="phone" value={customer.phone} onChange={handleChange} required />
-      </div>
-      <button type="submit">Update Customer</button>
-    </form>
+    <Form onSubmit={handleSubmit}>
+      <Form.Group controlId="formName">
+        <Form.Label>Name</Form.Label>
+        <Form.Control type="text" name="name" value={customer.name} onChange={handleChange} required />
+      </Form.Group>
+      <Form.Group controlId="formEmail">
+        <Form.Label>Email</Form.Label>
+        <Form.Control type="email" name="email" value={customer.email} onChange={handleChange} required />
+      </Form.Group>
+      <Form.Group controlId="formPhone">
+        <Form.Label>Phone</Form.Label>
+        <Form.Control type="text" name="phone" value={customer.phone} onChange={handleChange} required />
+      </Form.Group>
+      <Button variant="primary" type="submit">Update Customer</Button>
+    </Form>
   );
 };
 
