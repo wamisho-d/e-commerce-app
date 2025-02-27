@@ -1,32 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { fetchData } from '../../api';
+import React from 'react';
+import axios from 'axios';
+import { Button } from 'react-bootstrap';
+import { useParams, useHistory } from 'react-router-dom';
 
-const ReadCustomerDetails = ({ match }) => {
-  const [customer, setCustomer] = useState(null);
-  const { id } = match.params;
+const DeleteCustomer = () => {
+  const { id } = useParams();
+  const history = useHistory();
 
-  useEffect(() => {
-    const getCustomer = async () => {
-      try {
-        const data = await fetchData(`/customers/${id}`);
-        setCustomer(data);
-      } catch (error) {
-        alert('Error fetching customer details');
-      }
-    };
-    getCustomer();
-  }, [id]);
-
-  if (!customer) return <div>Loading...</div>;
+  const handleDelete = () => {
+    axios.delete(`/api/customers/${id}`)
+      .then(response => {
+        console.log('Customer deleted:', response.data);
+        history.push('/customers');
+      })
+      .catch(error => console.error('There was an error deleting the customer:', error));
+  };
 
   return (
-    <div>
-      <h2>Customer Details</h2>
-      <p>Name: {customer.name}</p>
-      <p>Email: {customer.email}</p>
-      <p>Phone: {customer.phone}</p>
-    </div>
+    <Button variant="danger" onClick={handleDelete}>Delete Customer</Button>
   );
 };
 
-export default ReadCustomerDetails;
+export default DeleteCustomer;
