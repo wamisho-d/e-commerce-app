@@ -1,31 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { fetchData } from '../../api';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
-const ReadProductDetails = ({ match }) => {
+const ProductDetails = () => {
+  const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const { id } = match.params;
 
   useEffect(() => {
-    const getProduct = async () => {
-      try {
-        const data = await fetchData(`/products/${id}`);
-        setProduct(data);
-      } catch (error) {
-        alert('Error fetching product details');
-      }
-    };
-    getProduct();
+    axios.get(`/api/products/${id}`)
+      .then(response => setProduct(response.data))
+      .catch(error => console.error('There was an error fetching the product details:', error));
   }, [id]);
 
   if (!product) return <div>Loading...</div>;
 
   return (
     <div>
-      <h2>Product Details</h2>
-      <p>Name: {product.name}</p>
+      <h2>{product.name}</h2>
       <p>Price: ${product.price}</p>
     </div>
   );
 };
 
-export default ReadProductDetails;
+export default ProductDetails;
