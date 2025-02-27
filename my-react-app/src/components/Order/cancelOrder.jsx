@@ -1,27 +1,23 @@
-import React, { useState } from 'react';
-import { fetchData } from '../../api';
+import React from 'react';
+import axios from 'axios';
+import { Button } from 'react-bootstrap';
+import { useParams, useHistory } from 'react-router-dom';
 
 const CancelOrder = () => {
-  const [orderId, setOrderId] = useState('');
+  const { id } = useParams();
+  const history = useHistory();
 
-  const handleChange = (e) => {
-    setOrderId(e.target.value);
-  };
-
-  const handleCancel = async () => {
-    try {
-      await fetchData(`/orders/${orderId}`, { method: 'DELETE' });
-      alert('Order canceled successfully');
-    } catch (error) {
-      alert('Error canceling order');
-    }
+  const handleCancel = () => {
+    axios.delete(`/api/orders/${id}`)
+      .then(response => {
+        console.log('Order cancelled:', response.data);
+        history.push('/orders');
+      })
+      .catch(error => console.error('There was an error cancelling the order:', error));
   };
 
   return (
-    <div>
-      <input type="text" value={orderId} onChange={handleChange} placeholder="Enter Order ID" />
-      <button onClick={handleCancel}>Cancel Order</button>
-    </div>
+    <Button variant="danger" onClick={handleCancel}>Cancel Order</Button>
   );
 };
 
