@@ -1,20 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { fetchData } from '../../api';
+import React, { useState, useEffect } from 'react';
+import { Form, Button } from 'react-bootstrap';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
-const UpdateProductForm = ({ match }) => {
+const UpdateProductForm = () => {
+  const { id } = useParams();
   const [product, setProduct] = useState({ name: '', price: '' });
-  const { id } = match.params;
 
   useEffect(() => {
-    const getProduct = async () => {
-      try {
-        const data = await fetchData(`/products/${id}`);
-        setProduct(data);
-      } catch (error) {
-        alert('Error fetching product details');
-      }
-    };
-    getProduct();
+    axios.get(`/api/products/${id}`)
+      .then(response => setProduct(response.data))
+      .catch(error => console.error('There was an error fetching the product details:', error));
   }, [id]);
 
   const handleChange = (e) => {
@@ -22,32 +18,25 @@ const UpdateProductForm = ({ match }) => {
     setProduct({ ...product, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await fetchData(`/products/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(product),
-      });
-      alert('Product updated successfully');
-    } catch (error) {
-      alert('Error updating product');
-    }
+    axios.put(`/api/products/${id}`, product)
+      .then(response => console.log('Product updated:', response.data))
+      .catch(error => console.error('There was an error updating the product:', error));
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Name: </label>
-        <input type="text" name="name" value={product.name} onChange={handleChange} required />
-      </div>
-      <div>
-        <label>Price: </label>
-        <input type="number" name="price" value={product.price} onChange={handleChange} required />
-      </div>
-      <button type="submit">Update Product</button>
-    </form>
+    <Form onSubmit={handleSubmit}>
+      <Form.Group controlId="formName">
+        <Form.Label>Name</Form.Label>
+        <Form.Control type="text" name="name" value={product.name} onChange={handleChange} required />
+      </Form.Group>
+      <Form.Group controlId="formPrice">
+        <Form.Label>Price</Form.Label>
+        <Form.Control type="number" name="price" value={product.price} onChange={handleChange} required />
+      </Form.Group>
+      <Button variant="primary" type="submit">Update Product</Button>
+    </Form>
   );
 };
 
