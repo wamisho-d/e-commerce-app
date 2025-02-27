@@ -29,13 +29,14 @@ const Routes = () => {
         <Route path="/products/:id" component={ProductDetails} />
         <Route path="/products/update/:id" component={UpdateProductForm} />
         <Route path="/products/delete/:id" component={DeleteProduct} />
+        <Route path="/products/confirmation" component={ProductConfirmationModal} />
         <Route path="/products" component={ProductList} />
         <Route path="/products/stock" component={ProductStock} />
         <Route path="/orders/create" component={PlaceOrderForm} />
         <Route path="/orders/history" component={OrderHistory} />
         <Route path="/orders/cancel/:id" component={CancelOrder} />
         <Route path="/orders/total/:orderId" component={OrderTotal} />
-        <Route path="/products/confirmation" component={ProductConfirmationModal} />
+     
       </Routes>
     </Router>
   );
