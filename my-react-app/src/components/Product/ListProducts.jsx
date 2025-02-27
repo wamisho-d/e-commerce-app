@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-const ProductList = () => {
+const ListProduct = () => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -13,7 +13,7 @@ const ProductList = () => {
 
   return (
     <div>
-      <h2>Product List</h2>
+      <h2>List Product</h2>
       <ul>
         {products.map(product => (
           <li key={product.id}>
@@ -25,4 +25,4 @@ const ProductList = () => {
   );
 };
 
-export default ProductList;
+export default ListProduct;
