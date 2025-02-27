@@ -1,17 +1,12 @@
-import React from "react";
-import { BrowserRouter as Router } from "react-router-dom";
-import AppRouter from "./AppRouter";
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './styles.css';
+import React from 'react';
+import Routes from './routes';
 
-function App() {
+const App = () => {
   return (
-    <Router>
-      <div className="App">
-        <AppRouter />
-      </div>
-    </Router>
+    <div>
+      <Routes />
+    </div>
   );
-}
+};
 
 export default App;
