@@ -1,30 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { fetchData } from '../../api';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const ManageOrderHistory = () => {
+const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    const getOrders = async () => {
-      try {
-        const data = await fetchData('/orders');
-        setOrders(data);
-      } catch (error) {
-        alert('Error fetching orders');
-      }
-    };
-    getOrders();
+    axios.get('/api/orders')
+      .then(response => setOrders(response.data))
+      .catch(error => console.error('There was an error fetching the orders:', error));
   }, []);
 
   return (
     <div>
       <h2>Order History</h2>
       <ul>
-        {orders.map((order) => (
+        {orders.map(order => (
           <li key={order.id}>
-            Order Date: {order.orderDate} - Customer: {order.customerId}
+            Order ID: {order.id} - Customer: {order.customer.name} - Date: {order.date}
             <ul>
-              {order.products.map((product) => (
+              {order.products.map(product => (
                 <li key={product.id}>{product.name} - ${product.price}</li>
               ))}
             </ul>
@@ -35,4 +29,4 @@ const ManageOrderHistory = () => {
   );
 };
 
-export default ManageOrderHistory;
+export default OrderHistory;
