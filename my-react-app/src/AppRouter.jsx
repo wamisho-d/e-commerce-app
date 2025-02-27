@@ -1,37 +1,44 @@
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import CreateCustomerForm from './components/Customer/CreateCustomerForm';
-import ReadCustomerDetails from './components/Customer/ReadCustomerDetails';
+import CustomerDetails from './components/Customer/CustomerDetails';
 import UpdateCustomerForm from './components/Customer/UpdateCustomerForm';
 import DeleteCustomer from './components/Customer/DeleteCustomer';
-import ListProducts from './components/Product/ListProducts';
 import CreateProductForm from './components/Product/CreateProductForm';
-import ReadProductDetails from './components/Product/ReadProductDetails';
+import ProductDetails from './components/Product/ProductDetails';
 import UpdateProductForm from './components/Product/UpdateProductForm';
 import DeleteProduct from './components/Product/DeleteProduct';
 import ProductConfirmationModal from './components/Product/ProductConfirmationModal';
+import ProductList from './components/Product/ProductList';
+import ProductStock from './components/Product/ProductStock';
 import PlaceOrderForm from './components/Order/PlaceOrderForm';
-import ManageOrderHistory from './components/Order/ManageOrderHistory';
+import OrderHistory from './components/Order/OrderHistory';
 import CancelOrder from './components/Order/CancelOrder';
-import CalculateOrderTotalPrice from './components/Order/CalculateOrderTotalPrice';
+import OrderTotal from './components/Order/OrderTotal';
 
-const AppRouter = () => (
-  <Routes>
-    <Route path="/customers/new" component={CreateCustomerForm} />
-    <Route path="/customers/:id" component={ReadCustomerDetails} />
-    <Route path="/customers/:id/edit" component={UpdateCustomerForm} />
-    <Route path="/customer/:id/delete" component={DeleteCustomer} />
-    <Route path="/products" component={ListProducts} />
-    <Route path="/products/new" component={CreateProductForm} />
-    <Route path="/products/:id" component={ReadProductDetails} />
-    <Route path="/products/:id/edit" component={UpdateProductForm} />
-    <Route path="/products/:id/delete" component={DeleteProduct} />
-    <Route path="/products/confirmation" component={ProductConfirmationModal} />
-    <Route path="/orders/new" component={PlaceOrderForm} />
-    <Route path="/orders/history" component={ManageOrderHistory} />
-    <Route path="/orders/cancel" component={CancelOrder} />
-    <Route path="/orders/total" component={CalculateOrderTotalPrice} />
-  </Routes>
-);
 
-export default AppRouter;
+const Routes = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/customers/create" component={CreateCustomerForm} />
+        <Route path="/customers/:id" component={CustomerDetails} />
+        <Route path="/customers/update/:id" component={UpdateCustomerForm} />
+        <Route path="/customers/delete/:id" component={DeleteCustomer} />
+        <Route path="/products/create" component={CreateProductForm} />
+        <Route path="/products/:id" component={ProductDetails} />
+        <Route path="/products/update/:id" component={UpdateProductForm} />
+        <Route path="/products/delete/:id" component={DeleteProduct} />
+        <Route path="/products" component={ProductList} />
+        <Route path="/products/stock" component={ProductStock} />
+        <Route path="/orders/create" component={PlaceOrderForm} />
+        <Route path="/orders/history" component={OrderHistory} />
+        <Route path="/orders/cancel/:id" component={CancelOrder} />
+        <Route path="/orders/total/:orderId" component={OrderTotal} />
+        <Route path="/products/confirmation" component={ProductConfirmationModal} />
+      </Routes>
+    </Router>
+  );
+};
+
+export default Routes;
