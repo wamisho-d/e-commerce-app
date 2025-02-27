@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { fetchData } from '../../api';
+import { Form, Button } from 'react-bootstrap';
+import axios from 'axios';
 
 const CreateCustomerForm = () => {
   const [customer, setCustomer] = useState({ name: '', email: '', phone: '' });
@@ -9,36 +10,29 @@ const CreateCustomerForm = () => {
     setCustomer({ ...customer, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await fetchData('/customers', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(customer),
-      });
-      alert('Customer created successfully');
-    } catch (error) {
-      alert('Error creating customer');
-    }
+    axios.post('/api/customers', customer)
+      .then(response => console.log('Customer created:', response.data))
+      .catch(error => console.error('There was an error creating the customer:', error));
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Name: </label>
-        <input type="text" name="name" value={customer.name} onChange={handleChange} required />
-      </div>
-      <div>
-        <label>Email: </label>
-        <input type="email" name="email" value={customer.email} onChange={handleChange} required />
-      </div>
-      <div>
-        <label>Phone: </label>
-        <input type="tel" name="phone" value={customer.phone} onChange={handleChange} required />
-      </div>
-      <button type="submit">Create Customer</button>
-    </form>
+    <Form onSubmit={handleSubmit}>
+      <Form.Group controlId="formName">
+        <Form.Label>Name</Form.Label>
+        <Form.Control type="text" name="name" value={customer.name} onChange={handleChange} required />
+      </Form.Group>
+      <Form.Group controlId="formEmail">
+        <Form.Label>Email</Form.Label>
+        <Form.Control type="email" name="email" value={customer.email} onChange={handleChange} required />
+      </Form.Group>
+      <Form.Group controlId="formPhone">
+        <Form.Label>Phone</Form.Label>
+        <Form.Control type="text" name="phone" value={customer.phone} onChange={handleChange} required />
+      </Form.Group>
+      <Button variant="primary" type="submit">Create Customer</Button>
+    </Form>
   );
 };
 
