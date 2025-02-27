@@ -1,18 +1,23 @@
 import React from 'react';
-import { fetchData } from '../../api';
+import axios from 'axios';
+import { Button } from 'react-bootstrap';
+import { useParams, useHistory } from 'react-router-dom';
 
-const DeleteCustomer = ({ id }) => {
-  const handleDelete = async () => {
-    try {
-      await fetchData(`/customers/${id}`, { method: 'DELETE' });
-      alert('Customer deleted successfully');
-    } catch (error) {
-      alert('Error deleting customer');
-    }
+const DeleteCustomer = () => {
+  const { id } = useParams();
+  const history = useHistory();
+
+  const handleDelete = () => {
+    axios.delete(`/api/customers/${id}`)
+      .then(response => {
+        console.log('Customer deleted:', response.data);
+        history.push('/customers');
+      })
+      .catch(error => console.error('There was an error deleting the customer:', error));
   };
 
   return (
-    <button onClick={handleDelete}>Delete Customer</button>
+    <Button variant="danger" onClick={handleDelete}>Delete Customer</Button>
   );
 };
 
