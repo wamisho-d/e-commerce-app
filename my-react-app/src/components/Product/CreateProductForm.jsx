@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { fetchData } from '../../api';
+import { Form, Button } from 'react-bootstrap';
+import axios from 'axios';
 
 const CreateProductForm = () => {
   const [product, setProduct] = useState({ name: '', price: '' });
@@ -9,32 +10,25 @@ const CreateProductForm = () => {
     setProduct({ ...product, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await fetchData('/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(product),
-      });
-      alert('Product created successfully');
-    } catch (error) {
-      alert('Error creating product');
-    }
+    axios.post('/api/products', product)
+      .then(response => console.log('Product created:', response.data))
+      .catch(error => console.error('There was an error creating the product:', error));
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Name: </label>
-        <input type="text" name="name" value={product.name} onChange={handleChange} required />
-      </div>
-      <div>
-        <label>Price: </label>
-        <input type="number" name="price" value={product.price} onChange={handleChange} required />
-      </div>
-      <button type="submit">Create Product</button>
-    </form>
+    <Form onSubmit={handleSubmit}>
+      <Form.Group controlId="formName">
+        <Form.Label>Name</Form.Label>
+        <Form.Control type="text" name="name" value={product.name} onChange={handleChange} required />
+      </Form.Group>
+      <Form.Group controlId="formPrice">
+        <Form.Label>Price</Form.Label>
+        <Form.Control type="number" name="price" value={product.price} onChange={handleChange} required />
+      </Form.Group>
+      <Button variant="primary" type="submit">Create Product</Button>
+    </Form>
   );
 };
 
